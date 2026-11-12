@@ -1,0 +1,14 @@
+# A reusable workflow of the same repository.
+name: reusable
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  hello:
+    name: Hello
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Hello"

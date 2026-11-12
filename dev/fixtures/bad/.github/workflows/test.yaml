@@ -1,0 +1,17 @@
+# Fails both tools: an unknown event for actionlint, an unpinned action and
+# an injected expression for zizmor.
+name: test
+
+on:
+  pushh:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - run: echo "${{ github.event.head_commit.message }}"
