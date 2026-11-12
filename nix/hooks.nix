@@ -34,7 +34,7 @@
       chosen =
         default: paths:
         let
-          found = lib.findFirst (path: builtins.pathExists "${self}/${path}") null paths;
+          found = lib.findFirst (path: builtins.pathExists (self.outPath + "/${path}")) null paths;
         in
         if found == null then
           builtins.path {
@@ -43,7 +43,7 @@
           }
         else
           builtins.path {
-            path = "${self}/${found}";
+            path = self.outPath + "/${found}";
             name = baseNameOf found;
           };
       # The standard paths that actionlint and zizmor discover.
