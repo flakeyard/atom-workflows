@@ -42,7 +42,7 @@
         cp -r --no-preserve=mode ${root + "/dev/fixtures/good"} work
         cd work
         mkdir .git
-        [[ ${toString (lib.length ignores)} == 3 ]]
+        [[ ${toString (lib.length ignores)} == 4 ]]
         status=0
         ${lib.concatMapStrings (ignore: ''
           if ${hook.entry} ${lib.escapeShellArgs (without ignore)} .github/workflows/*.yaml; then

@@ -42,10 +42,11 @@ git-hooks.nix at `204b6977`, showed:
 - git-hooks.nix defines the hooks `actionlint` and `zizmor`, both with
   `files = "^.github/workflows/"` (an unescaped dot) and the upstream packages.
   zizmor also audits composite actions, `action.yml`.
-- actionlint reports three messages about valid syntax it does not know: `$/`
-  references of actions and of reusable workflows, and the key `queue` of
-  `concurrency`. Its `-ignore` flag takes a regular expression matched against
-  the message alone.
+- actionlint reports four messages about valid syntax it does not know: `$/`
+  references of actions and of reusable workflows, the key `queue` of
+  `concurrency`, and the GitHub-hosted runner labels `ubuntu-26.04` and
+  `ubuntu-26.04-arm`, which it calls unknown labels. Its `-ignore` flag takes a
+  regular expression matched against the message alone.
 - actionlint checks the inputs of local actions only in a directory with `.git`;
   an empty `.git` directory is enough. A check in the Nix sandbox has none.
 - zizmor 1.32.0 has 41 audits, listed in `support/zizmor.schema.json` of its
@@ -173,8 +174,8 @@ every audit in it.
 - (−) Online audits do not run in `nix flake check`; a project runs the app in
   CI with a token.
 - (−) Composite actions outside `.github/actions/` and the root are not audited.
-- (−) Until actionlint knows `$/` and `queue`, the atom carries three ignore
-  patterns, also for projects that use neither.
+- (−) Until actionlint knows `$/`, `queue` and the `ubuntu-26.04` labels, the
+  atom carries four ignore patterns, also for projects that use none of them.
 - (±) A project file that is not tracked by git is seen by the tools in the
   working tree but not by the atom.
 

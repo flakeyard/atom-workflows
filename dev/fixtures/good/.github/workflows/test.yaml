@@ -28,3 +28,13 @@ jobs:
 
   call:
     uses: $/.github/workflows/reusable.yaml
+
+  runners:
+    name: Runners
+    strategy:
+      matrix:
+        runner: [ubuntu-26.04, ubuntu-26.04-arm]
+    runs-on: ${{ matrix.runner }}
+    permissions: {}
+    steps:
+      - run: uname -m
