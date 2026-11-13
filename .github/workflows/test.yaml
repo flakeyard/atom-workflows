@@ -33,5 +33,7 @@ jobs:
     with:
       needs: ${{ toJSON(needs) }}
       flake: ./dev
-      expect-checks: '["workflows"]'
+      expect-checks: >-
+        ["workflows","test-bad","test-configs","test-configs-project",
+        "test-good","test-ignores"]
       renovate-presets: '["flakeyard/renovate-config"]'

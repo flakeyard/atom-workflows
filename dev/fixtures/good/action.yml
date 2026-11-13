@@ -1,0 +1,7 @@
+name: fixture
+description: The action of the repository.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: echo "Done"

@@ -1,0 +1,17 @@
+# Passes only with the project's files: a self-hosted runner label for
+# actionlint and an action pinned by tag for zizmor.
+name: test
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: fixture-runner
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
