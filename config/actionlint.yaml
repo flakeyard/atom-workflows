@@ -1,0 +1,24 @@
+# The default actionlint configuration of atom-workflows, flakeyard's
+# configuration of actionlint (FY-0037:
+# https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0037-atoms-ship-default-configs-that-projects-replace.md).
+#
+# A project replaces it wholly by committing its own file at
+# .github/actionlint.yaml or .github/actionlint.yml; nothing is merged. To
+# change one setting, copy this file to one of these paths and edit the copy.
+#
+# Every setting is written out with the value actionlint would use without it.
+# The atom passes the messages it ignores as flags, so they apply with a
+# project's file too.
+
+self-hosted-runner:
+  # No labels of self-hosted runners: flakeyard runs only on GitHub-hosted
+  # runners, so an unknown label is a typo.
+  labels: []
+
+# No list of configuration variables: actionlint then does not check the
+# names in vars, which every project defines differently.
+config-variables: null
+
+# No per-path settings: the messages ignored for every project are flags of
+# the atom.
+paths: {}

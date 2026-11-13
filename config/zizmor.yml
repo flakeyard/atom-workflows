@@ -1,0 +1,166 @@
+# The default zizmor configuration of atom-workflows, flakeyard's configuration
+# of zizmor (FY-0037:
+# https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0037-atoms-ship-default-configs-that-projects-replace.md).
+#
+# A project replaces it wholly by committing its own file at
+# .github/zizmor.yml, .github/zizmor.yaml, zizmor.yml or zizmor.yaml; nothing
+# is merged. To change one setting, copy this file to one of these paths and
+# edit the copy.
+#
+# Every audit of zizmor is listed explicitly, so that this file shows what runs
+# and a new audit of zizmor is noticed by the tests of the atom. Audits that
+# need the network run only in the app workflows-online; the persona of the
+# atom (regular by default) decides which findings are shown.
+rules:
+  # Pinning and supply chain.
+
+  # Actions and reusable workflows pinned by a full commit SHA (FY-0030).
+  unpinned-uses:
+    disable: false
+    config:
+      policies:
+        # zizmor's default, written out so that a change of the default upstream
+        # does not change flakeyard's rule.
+        "*": hash-pin
+  # Container images pinned by digest.
+  unpinned-images:
+    disable: false
+  # Actions configured to download the latest version of a tool.
+  unpinned-tools:
+    disable: false
+  # Actions from archived repositories, which get no fixes.
+  archived-uses:
+    disable: false
+  # Actions whose names look like typos of well-known actions.
+  typosquat-uses:
+    disable: false
+  # Actions forbidden by an allow or deny list. No list: allowlists are
+  # specific to an organization; flakeyard enforces its list by the settings of
+  # its GitHub organization.
+  forbidden-uses:
+    disable: false
+  # Packages installed by run steps outside a locked manifest.
+  adhoc-packages:
+    disable: false
+  # Actions that only do what the runner image already provides.
+  superfluous-actions:
+    disable: false
+  # Version comments that do not match the pinned commit.
+  ref-version-mismatch:
+    disable: false
+  # Actions and workflows of the same repository referenced without $/.
+  self-repository:
+    disable: false
+
+  # Injection, credentials and permissions.
+
+  # Expressions expanded into code, such as ${{ }} inside run.
+  template-injection:
+    disable: false
+  # Writes to GITHUB_ENV and GITHUB_PATH that untrusted input can control.
+  github-env:
+    disable: false
+  # Workflow commands re-enabled with ACTIONS_ALLOW_UNSECURE_COMMANDS.
+  insecure-commands:
+    disable: false
+  # Credentials persisted by actions/checkout.
+  artipacked:
+    disable: false
+  # GitHub App tokens with more scope than needed.
+  github-app:
+    disable: false
+  # The whole secrets context passed where one secret is needed.
+  overprovisioned-secrets:
+    disable: false
+  # Secrets derived in ways that escape the redaction of logs.
+  unredacted-secrets:
+    disable: false
+  # secrets: inherit in calls of reusable workflows (FY-0030).
+  secrets-inherit:
+    disable: false
+  # Credentials of container registries written into workflows.
+  hardcoded-container-credentials:
+    disable: false
+  # Permissions broader than the jobs need (FY-0030).
+  excessive-permissions:
+    disable: false
+  # Caches that a release can restore from untrusted runs.
+  cache-poisoning:
+    disable: false
+
+  # Triggers and conditions.
+
+  # Triggers that run with secrets on code of forks, such as
+  # pull_request_target.
+  dangerous-triggers:
+    disable: false
+  # Conditions on bot actors that others can spoof.
+  bot-conditions:
+    disable: false
+  # if conditions that are always true.
+  unsound-condition:
+    disable: false
+  # contains() on strings that a user controls.
+  unsound-contains:
+    disable: false
+  # && || pseudo-ternaries whose true branch can be falsy.
+  unsound-ternary:
+    disable: false
+  # Obfuscated uses and expressions that hide what other audits check.
+  obfuscation:
+    disable: false
+  # Features that are hard to audit, such as unknown shells.
+  misfeature:
+    disable: false
+
+  # Audits that need the network: they run only in the app workflows-online.
+
+  # Pinned commits that are not in the history of the action's repository.
+  impostor-commit:
+    disable: false
+  # Actions with published vulnerabilities.
+  known-vulnerable-actions:
+    disable: false
+  # References that are both a tag and a branch.
+  ref-confusion:
+    disable: false
+  # Pinned commits that are not a release of the action.
+  stale-action-refs:
+    disable: false
+
+  # Audits that report only with the pedantic or auditor persona.
+
+  # Workflows and actions without name.
+  anonymous-definition:
+    disable: false
+  # Workflows without concurrency limits.
+  concurrency-limits:
+    disable: false
+  # Jobs on self-hosted runners.
+  self-hosted-runner:
+    disable: false
+  # Permissions without a comment that explains them (FY-0030).
+  undocumented-permissions:
+    disable: false
+  # Secrets used by jobs without an environment.
+  secrets-outside-env:
+    disable: false
+
+  # Not flakeyard's stack: files that the atom does not give to zizmor and
+  # package registries that flakeyard does not publish to.
+
+  # Cooldown of Dependabot updates.
+  dependabot-cooldown:
+    disable: false
+    config:
+      # zizmor's default, written out.
+      days: 7
+  # Dependabot updates allowed to run code.
+  dependabot-execution:
+    disable: false
+  # Insecure URLs in pre-commit configurations.
+  insecure-url-scheme:
+    disable: false
+  # Package uploads with long-lived credentials instead of trusted publishing.
+  use-trusted-publishing:
+    disable: false
