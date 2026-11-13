@@ -210,7 +210,11 @@ nix flake check --no-update-lock-file --no-build --all-systems ./dev
 CI runs [`test.yaml`](.github/workflows/test.yaml), which calls
 [workflow-check][workflow-check] with `./dev`: it checks `dev/flake.lock`,
 builds every check on x86_64 and arm64 runners, checks the pull request title
-and `renovate.json`, and reports `check / required` ([FY-0034][fy-0034]).
+and `renovate.json`, fails on configuration files of atom tools at their
+standard root paths ([FY-0037][fy-0037]), and reports `check / required`
+([FY-0034][fy-0034]). Its weekly run builds the checks against the current
+branches of nixpkgs, git-hooks.nix and flake-parts instead of the locked
+revisions ([FY-0038][fy-0038]).
 [`scorecard.yaml`](.github/workflows/scorecard.yaml) runs OpenSSF Scorecard, and
 [`release.yaml`](.github/workflows/release.yaml) releases the repository with
 [workflow-release][workflow-release].
