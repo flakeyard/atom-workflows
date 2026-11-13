@@ -35,5 +35,6 @@ jobs:
       flake: ./dev
       expect-checks: >-
         ["workflows","test-bad","test-configs","test-configs-project",
-        "test-good","test-ignores"]
+        "test-follows","test-good","test-ignores","test-next-major",
+        "test-zizmor-audits"]
       renovate-presets: '["flakeyard/renovate-config"]'
