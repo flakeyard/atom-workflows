@@ -91,7 +91,7 @@ one ([FY-0037][fy-0037]).
   `.github/zizmor.yaml`, `zizmor.yml` and `zizmor.yaml`; the first path found,
   in the order listed, wins.
 - actionlint always gets `-config-file` with the chosen file,
-  `-shellcheck=<shellcheck>` and `-pyflakes=` (off), and three `-ignore`
+  `-shellcheck=<shellcheck>` and `-pyflakes=` (off), and four `-ignore`
   patterns.
 - zizmor always gets `--config` with the chosen file, `--no-progress`,
   `--persona=<persona>` and, except in the app `workflows-online`, `--offline`.
@@ -99,11 +99,12 @@ one ([FY-0037][fy-0037]).
   project's nixpkgs; actionlint passes it no configuration, and the atom owns no
   configuration of it.
 
-The `-ignore` patterns drop three messages of actionlint about valid syntax it
+The `-ignore` patterns drop four messages of actionlint about valid syntax it
 does not know yet, each matched against the whole message: `$/` references of
-actions and of reusable workflows, and the key `queue` of `concurrency`. They
-are flags, so they apply with a project's file too. A test of the atom fails
-once actionlint stops reporting one of them.
+actions and of reusable workflows, the key `queue` of `concurrency`, and the
+GitHub-hosted runner labels `ubuntu-26.04` and `ubuntu-26.04-arm`. They are
+flags, so they apply with a project's file too. A test of the atom fails once
+actionlint stops reporting one of them.
 
 To replace a default, copy it from [`config/`](config) to a standard path,
 commit it and edit it. Since the atom reads only tracked files, an untracked

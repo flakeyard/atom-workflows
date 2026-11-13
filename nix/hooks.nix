@@ -58,13 +58,15 @@
         "zizmor.yaml"
       ];
       # Messages of actionlint 1.7.12 about valid syntax it does not know:
-      # $/ references of the same repository (FY-0030) and the queue of a
-      # concurrency group. Anchored to the whole message, so that nothing
+      # $/ references of the same repository (FY-0030), the queue of a
+      # concurrency group and the GitHub-hosted runner labels ubuntu-26.04
+      # and ubuntu-26.04-arm. Anchored to the whole message, so that nothing
       # else is ignored; a test fails once actionlint stops reporting one.
       ignores = [
         ''^specifying action "\$/[^"]*" in invalid format because ref is missing\. available formats are "\{owner\}/\{repo\}@\{ref\}" or "\{owner\}/\{repo\}/\{path\}@\{ref\}"$''
         ''^reusable workflow call "\$/[^"]*" at "uses" is not following the format "owner/repo/path/to/workflow\.yml@ref" nor "\./path/to/workflow\.yml"\. see https://docs\.github\.com/en/actions/learn-github-actions/reusing-workflows for more details$''
         ''^unexpected key "queue" for "concurrency" section\. expected one of "cancel-in-progress", "group"$''
+        ''^label "ubuntu-26\.04(-arm)?" is unknown\. available labels are "[^"]*"(, "[^"]*")*\. if it is a custom label for self-hosted runner, set list of labels in actionlint\.yaml config file$''
       ];
     in
     {
