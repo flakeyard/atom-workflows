@@ -1,5 +1,5 @@
-# CI of this repository: workflow-check, which checks the pull request title
-# and renovate.json; the checks of dev/flake.nix come with the code.
+# CI of this repository: workflow-check, which builds the checks of
+# dev/flake.nix, the tests of the atom and its checks of this repository.
 name: test
 
 on:
@@ -32,6 +32,6 @@ jobs:
       statuses: write # commit statuses of dispatched runs
     with:
       needs: ${{ toJSON(needs) }}
-      # No flake yet.
-      flake: ""
+      flake: ./dev
+      expect-checks: '["workflows"]'
       renovate-presets: '["flakeyard/renovate-config"]'

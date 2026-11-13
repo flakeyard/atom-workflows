@@ -25,5 +25,7 @@ in
   imports = [
     (upstream "git-hooks" atomInputs.git-hooks.flakeModule)
     (import ./hooks.nix { inherit root; })
+    ./checks.nix
+    ./shell.nix
   ];
 }
