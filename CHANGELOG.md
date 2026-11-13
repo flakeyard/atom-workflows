@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/flakeyard/atom-workflows/compare/v0.1.0...v0.1.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* build checks.workflows with lib.run of git-hooks.nix, so that excludes apply ([#15](https://github.com/flakeyard/atom-workflows/issues/15)) ([902d50e](https://github.com/flakeyard/atom-workflows/commit/902d50efe177e6ade6e13e79651734ba4e662542))
+
 ## 0.1.0 (2026-11-13)
 
 
