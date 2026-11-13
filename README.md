@@ -119,16 +119,20 @@ The hooks `actionlint` and `zizmor` of git-hooks.nix are set with
 `lib.mkOverride 900`, so a plain definition of the project, such as
 `perSystem.pre-commit.settings.hooks.zizmor.args = [ ... ];`, replaces a value
 of the atom without `mkForce`. The check and the app run the hooks' `entry` and
-`args`, so such a definition changes them too.
+`args`, so such a definition changes them too. The check also honours the hooks'
+other options and the project's global `perSystem.pre-commit.settings.excludes`:
+pre-commit selects the files in the check as the installed hook does.
 
 ## Outputs
 
 - `flakeModules.default`: the module. It adds to every system:
   - the hooks `actionlint` and `zizmor`, enabled, with the packages of the
     project's nixpkgs;
-  - `checks.workflows`: both hooks over the files of the domain, without network
-    access. It depends only on those files and the chosen configuration files,
-    so other changes keep it cached and substitutable;
+  - `checks.workflows`: both hooks, run by pre-commit through `lib.<system>.run`
+    of git-hooks.nix with the project's global excludes, over the files of the
+    domain, without network access. It depends only on the files that the hooks'
+    `files` patterns match and the chosen configuration files, so other changes
+    keep it cached and substitutable;
   - `apps.workflows-online`: zizmor with the same configuration and persona,
     without `--offline`, so that the audits that need the network run too. It
     reads a GitHub token from `GH_TOKEN` and fails without one, and writes
@@ -184,6 +188,10 @@ imports the atom as consumers do and holds the tests:
 - `test-good`, `test-bad`, `test-configs-project`: the check of the fixture
   projects in [`dev/fixtures`](dev/fixtures), which pass, fail both tools and
   pass only with their own configuration files;
+- `test-excluded`, `test-not-excluded`: the project's global excludes skip a
+  failing workflow in the check, and other excludes do not;
+- `test-local-action`: actionlint checks the inputs of a local action in the
+  check;
 - `test-configs`: the project's files replace the defaults in the hooks and in
   the check;
 - `test-ignores`: actionlint still reports each message the atom ignores;

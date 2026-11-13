@@ -1,6 +1,8 @@
-# The files of the domain: what the hooks actionlint and zizmor select in the
-# project's source, copied to a store path of their own, so that a change
-# elsewhere keeps the check cached (FY-0017).
+# The files of the domain: the project's files that the `files` pattern of the
+# hook actionlint or zizmor matches, copied to a store path of their own, so
+# that a change elsewhere keeps the check cached (FY-0017). The filter is
+# coarse: in the check, pre-commit selects among them by `files`, `types` and
+# `excludes`.
 {
   lib,
   self,
@@ -12,15 +14,11 @@ let
     hooks.zizmor
   ];
   relative = path: lib.removePrefix "${toString self.outPath}/" (toString path);
-  # pre-commit searches files in the relative path; types = [ "yaml" ] of
-  # both hooks selects these extensions.
-  selects =
-    hook: path:
-    builtins.match ".*(${hook.files}).*" path != null
-    && (lib.hasSuffix ".yml" path || lib.hasSuffix ".yaml" path);
+  # pre-commit searches the pattern in the relative path.
+  matches = hook: path: builtins.match ".*(${hook.files}).*" path != null;
   # Read from the project's source, never from a store path made during
   # evaluation, which a store may not have.
-  files = lib.filter (path: lib.any (hook: selects hook path) domain) (
+  files = lib.filter (path: lib.any (hook: matches hook path) domain) (
     map relative (lib.filesystem.listFilesRecursive self.outPath)
   );
   # The files and only the directories that hold them.
@@ -37,6 +35,11 @@ let
 in
 {
   inherit src;
-  # The paths that a hook selects, relative to src.
-  of = hook: lib.filter (selects hook) files;
+  # The paths that the app passes to a hook, relative to src; types =
+  # [ "yaml" ] of both hooks selects these extensions.
+  of =
+    hook:
+    lib.filter (
+      path: matches hook path && (lib.hasSuffix ".yml" path || lib.hasSuffix ".yaml" path)
+    ) files;
 }
