@@ -20,7 +20,8 @@
           inherit path;
           name = baseNameOf path;
         }}";
-      # The arguments of both hooks and the script of the check.
+      # The arguments of both hooks and the configuration of pre-commit in the
+      # check.
       uses =
         name: path:
         let
@@ -28,7 +29,7 @@
           inherit (pre-commit.settings) hooks;
         in
         lib.elem (stored path) (hooks.actionlint.args ++ hooks.zizmor.args)
-        && lib.hasInfix (stored path) checks.workflows.buildCommand;
+        && lib.hasInfix (stored path) (builtins.toJSON checks.workflows.config.rawConfig);
       own = root + "/dev/fixtures/project-config/.github";
       default = root + "/config";
     in

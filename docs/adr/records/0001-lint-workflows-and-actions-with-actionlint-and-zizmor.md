@@ -23,8 +23,12 @@ flakeyard require of it:
   the same name before the import. Upstream options are set with
   `lib.mkOverride 900`, tool packages come from the consumer's `pkgs`, the
   domain has one substitutable check without network access, work that needs the
-  network is an app, and developer tools are `devShells.flakeyard-<atom>`. Tests
-  live in `dev/` with their own lock and import the atom as consumers do.
+  network is an app, and developer tools are `devShells.flakeyard-<atom>`. The
+  check is built with `lib.<system>.run` of git-hooks.nix from only the domain's
+  hooks and the project's global excludes, over the project's source filtered
+  coarsely by the hooks' `files`, so that pre-commit selects the files and no
+  atom selects them itself. Tests live in `dev/` with their own lock and import
+  the atom as consumers do.
 - [FY-0037][fy-0037]: the atom ships flakeyard's configuration of each tool in
   `config/`; a project's file at the tool's standard root path replaces it
   wholly, is detected with `builtins.pathExists` and is passed by flag; the
@@ -49,6 +53,15 @@ git-hooks.nix at `204b6977`, showed:
   regular expression matched against the message alone.
 - actionlint checks the inputs of local actions only in a directory with `.git`;
   an empty `.git` directory is enough. A check in the Nix sandbox has none.
+- `lib.<system>.run` of git-hooks.nix evaluates the module of git-hooks.nix with
+  the hooks, excludes and packages it is given, and builds a derivation that
+  runs `git init` and `pre-commit run --all-files` over its `src`. It works
+  without network access, is substitutable, and depends only on `src`, the
+  configuration of the hooks it is given, pre-commit, git and the stdenv of the
+  nixpkgs of git-hooks.nix; other hooks of the project do not change it. It
+  honours `excludes` of the hooks and the global `excludes`. 0.1.0 selected the
+  files of the check by the hooks' `files` and a suffix test and ignored both
+  kinds of excludes, so the check and the hook could disagree.
 - zizmor 1.32.0 has 41 audits, listed in `support/zizmor.schema.json` of its
   source, which `pkgs.zizmor.src` contains. Four of them need the network:
   `impostor-commit`, `known-vulnerable-actions`, `ref-confusion` and
@@ -112,15 +125,22 @@ the chosen file with `builtins.path`.
 
 ### Check, app and shell
 
-`checks.workflows` runs both hooks, with their `entry` and `args`, over a store
-path that holds only the files the hooks select (their `files` and the `yaml`
-type), and passes each hook the paths it selects. It runs in a copy with an
-empty `.git`, so actionlint checks local actions as the hook does in the working
-tree, runs each enabled hook even when another fails, and has no network access.
-It stays substitutable.
+`checks.workflows` is built with `lib.<system>.run` of git-hooks.nix from only
+the hooks `actionlint` and `zizmor`, with every option the project's
+configuration holds for them (their `entry`, `args`, `files`, `types`,
+`excludes` and the others), the project's global `pre-commit.settings.excludes`
+and the project's `pre-commit` and `git` packages. Its `src` is the project's
+source filtered coarsely to the files that the `files` pattern of either hook
+matches, with only the directories that hold them. pre-commit selects among them
+by `files`, `types` and `excludes`, as the installed hook does in the working
+tree; the atom selects no files for the check. `lib.<system>.run` runs
+`git init`, so actionlint checks local actions as the hook does. Each enabled
+hook runs even when another fails, without network access, and the check stays
+substitutable.
 
-`apps.workflows-online` runs the hook `zizmor` without `--offline` over the same
-files, so the four online audits run too. It needs `GH_TOKEN`, and writes
+`apps.workflows-online` runs the hook `zizmor` without `--offline` over the
+files of the domain that its `files` pattern matches and that end in `.yml` or
+`.yaml`, so the four online audits run too. It needs `GH_TOKEN`, and writes
 annotations (`--format github`) when `GITHUB_ACTIONS` is set.
 
 `devShells.flakeyard-workflows` holds actionlint, zizmor and shellcheck.
@@ -138,10 +158,11 @@ guide the file names ([FY-0016][fy-0016], [FY-0038][fy-0038]).
 dev flake's `git-hooks`, which is what `follows` gives a consumer, and lints
 this repository with it. Its checks evaluate on x86_64-linux and aarch64-linux:
 fixture projects that pass, that fail both tools, that bring their own
-configuration files, a test that fails once actionlint stops reporting one of
-the ignored messages, a test of the follows error, of the next-major warning,
-and a test that `config/zizmor.yml` is valid against zizmor's schema and lists
-every audit in it.
+configuration files, that a global exclude makes pass and that other excludes
+leave failing, that fails only on the inputs of a local action, a test that
+fails once actionlint stops reporting one of the ignored messages, a test of the
+follows error, of the next-major warning, and a test that `config/zizmor.yml` is
+valid against zizmor's schema and lists every audit in it.
 
 ## Constraints
 
@@ -159,8 +180,12 @@ every audit in it.
 - `checks.workflows` MUST run `--offline` and MUST use the same `entry` and
   `args` as the hooks; the app MUST differ only by not passing `--offline` and
   by the output format.
-- The check MUST depend only on the files of the domain and the chosen
-  configuration files.
+- `checks.workflows` MUST be built with `lib.<system>.run` of git-hooks.nix from
+  only the hooks `actionlint` and `zizmor` and the project's global excludes,
+  and the atom MUST NOT select its files beyond the coarse filter by the hooks'
+  `files`.
+- The check MUST depend only on the files that the hooks' `files` patterns match
+  and the chosen configuration files.
 - Everything listed in the "Public API" of the README is the public API
   ([FY-0017][fy-0017], [FY-0024][fy-0024]).
 
@@ -168,6 +193,8 @@ every audit in it.
 
 - (+) A project gets the same findings in the git hook, in `nix flake check` and
   in CI, with flakeyard's configuration or its own.
+- (+) The check and the hook select the same files, also with the excludes of
+  the hooks and the project's global excludes.
 - (+) A change outside workflows and actions keeps `checks.workflows` cached.
 - (+) New audits of zizmor and fixed messages of actionlint are noticed by the
   scheduled tests, not by surprise.
@@ -176,6 +203,10 @@ every audit in it.
 - (−) Composite actions outside `.github/actions/` and the root are not audited.
 - (−) Until actionlint knows `$/`, `queue` and the `ubuntu-26.04` labels, the
   atom carries four ignore patterns, also for projects that use none of them.
+- (−) The stdenv of the check comes from the nixpkgs of git-hooks.nix; a project
+  whose `git-hooks` does not follow its `nixpkgs` evaluates a second nixpkgs.
+- (−) The app does not apply excludes, so it can audit a file that the check and
+  the hook skip.
 - (±) A project file that is not tracked by git is seen by the tools in the
   working tree but not by the atom.
 
@@ -189,6 +220,9 @@ every audit in it.
 - **Online audits in the check.** Checks run without network access (FY-0017).
 - **The aggregated `checks.pre-commit` of git-hooks.nix.** It depends on the
   whole source of the project (FY-0017).
+- **The atom's own file selection in the check** (0.1.0): each hook got the
+  paths its `files` pattern and a suffix test selected. It ignored excludes, so
+  the check and the hook could disagree, and it duplicated what pre-commit does.
 - **`path:..` as the atom's input in `dev/flake.nix`.** Fails the pin form rule
   of action-flake-lock.
 

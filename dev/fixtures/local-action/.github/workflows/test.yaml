@@ -1,0 +1,20 @@
+# Fails actionlint, which reads local actions only in a git repository, with
+# an input that the local action does not define. actionlint reads only
+# ./ references.
+name: test
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - uses: ./.github/actions/hello
+        with:
+          greeting: fixture
