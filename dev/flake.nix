@@ -11,6 +11,7 @@
       url = "git+https://github.com/cachix/git-hooks.nix?ref=master&rev=204b6977e00caac19e2313015a598543ca7be150&shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    atom-workspace.url = "git+https://github.com/flakeyard/atom-workspace?ref=v0&rev=272033a287fba41c0ebf6799ea6d43018d786a3e&shallow=1";
     import-tree.url = "git+https://github.com/vic/import-tree?ref=main&rev=eb1b52eaecc57f7c136d07ae8a93e724dfecac46&shallow=1";
   };
 
@@ -42,11 +43,10 @@
         ];
         imports = [
           atom.flakeModules.default
+          inputs.atom-workspace.flakeModules.default
           # Every file under nix/ is a flake-parts module.
           (inputs.import-tree ./nix)
         ];
         _module.args = { inherit root; };
-        # Until this repository adopts atom-workspace (FY-0038).
-        perSystem.pre-commit.check.enable = false;
       };
 }
