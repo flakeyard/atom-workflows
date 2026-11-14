@@ -36,6 +36,7 @@ repositories use it, in the form of [FY-0016][fy-0016]:
       url = "git+https://github.com/flakeyard/atom-workflows?ref=v0&rev=<commit>&shallow=1";
       inputs.git-hooks.follows = "git-hooks";
     };
+    atom-workspace.url = "git+https://github.com/flakeyard/atom-workspace?ref=v0&rev=<commit>&shallow=1";
   };
 
   outputs =
@@ -45,9 +46,10 @@ repositories use it, in the form of [FY-0016][fy-0016]:
         "x86_64-linux"
         "aarch64-linux"
       ];
-      imports = [ inputs.atom-workflows.flakeModules.default ];
-      # Until the project adopts atom-workspace (FY-0038).
-      perSystem.pre-commit.check.enable = false;
+      imports = [
+        inputs.atom-workflows.flakeModules.default
+        inputs.atom-workspace.flakeModules.default
+      ];
     };
 }
 ```
@@ -59,10 +61,10 @@ atom-workflows: input 'git-hooks' is locked twice; add to input atom-workflows:
   inputs.git-hooks.follows = "git-hooks";
 ```
 
-The line `perSystem.pre-commit.check.enable = false;` switches off the
-aggregated `checks.pre-commit` of git-hooks.nix, which depends on the whole
-source of the project. atom-workspace will switch it off; until then the project
-does ([FY-0038][fy-0038]).
+[atom-workspace][atom-workspace] joins the shell of the atom into
+`devShells.default`, installs its hooks and switches off the aggregated
+`checks.pre-commit` of git-hooks.nix, which depends on the whole source of the
+project ([FY-0038][fy-0038]).
 
 ## Files it reads
 
@@ -177,7 +179,12 @@ version is coming and where its migration guide is ([FY-0038][fy-0038]).
 Open the repository in the flakeyard dev container: the editor reads
 [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json), and
 `direnv` loads the shell of [`dev/flake.nix`](dev/flake.nix) through
-[`.envrc`](.envrc) ([FY-0012][fy-0012]). With Nix on the host, `direnv allow` or
+[`.envrc`](.envrc) ([FY-0012][fy-0012]). [atom-workspace][atom-workspace] builds
+the shell and installs the git hooks each time it starts. The container runs
+`direnv allow` when it is created; run it once in every other worktree, and run
+`direnv block` before you check out a branch you do not trust, since entering
+the directory runs that branch's shell hook. Commit inside the container, whose
+Nix store has the tools of the hooks. With Nix on the host, `direnv allow` or
 `nix develop ./dev` gives the same shell.
 
 The public [`flake.nix`](flake.nix) holds only the input and the module
@@ -227,6 +234,7 @@ the atoms that will provide them are not released yet ([FY-0038][fy-0038]).
 [MIT](LICENSE).
 
 [al]: config/actionlint.yaml
+[atom-workspace]: https://github.com/flakeyard/atom-workspace
 [zz]: config/zizmor.yml
 [adr-0001]:
   docs/adr/records/0001-lint-workflows-and-actions-with-actionlint-and-zizmor.md
