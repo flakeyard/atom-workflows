@@ -34,15 +34,16 @@ jobs:
       needs: ${{ toJSON(needs) }}
       flake: ./dev
       expect-checks: >-
-        ["workflows","test-bad","test-configs","test-configs-project",
+        ["nix","shell","test-bad","test-configs","test-configs-project",
         "test-excluded","test-follows","test-good","test-ignores",
         "test-local-action","test-next-major","test-not-excluded",
-        "test-zizmor-audits"]
+        "test-zizmor-audits","treefmt","workflows"]
       # The tests against the current upstream revisions (FY-0017, FY-0038).
       override-inputs: >-
         ${{ github.event_name == 'schedule'
             && '{"nixpkgs": "github:NixOS/nixpkgs/nixos-26.05",
                  "git-hooks": "github:cachix/git-hooks.nix/master",
+                 "treefmt-nix": "github:numtide/treefmt-nix/main",
                  "flake-parts": "github:hercules-ci/flake-parts/main"}'
             || '{}' }}
       renovate-presets: '["flakeyard/renovate-config"]'
