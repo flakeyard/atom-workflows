@@ -1,7 +1,7 @@
 # The hooks actionlint and zizmor of git-hooks.nix, with the configuration
 # that the project chose (FY-0037). Their files, package and arguments are the
 # single definition that the check and the app also run.
-{ root }:
+{ root, shared }:
 { flake-parts-lib, self, ... }:
 {
   _file = ./hooks.nix;
@@ -29,29 +29,22 @@
       ...
     }:
     let
-      # The project's file at the first standard path of the tool, else the
-      # default of the atom; either one as a store path of its own.
+      # The project's file at a standard path of the tool, else the default
+      # of the atom; either one as a store path of its own. Evaluation fails
+      # when the project has more than one file of a tool.
       chosen =
-        default: paths:
-        let
-          found = lib.findFirst (path: builtins.pathExists (self.outPath + "/${path}")) null paths;
-        in
-        if found == null then
-          builtins.path {
-            path = root + "/config/${default}";
-            name = default;
-          }
-        else
-          builtins.path {
-            path = self.outPath + "/${found}";
-            name = baseNameOf found;
-          };
+        tool: default: names:
+        (shared.config {
+          inherit lib;
+          atom = "atom-workflows";
+          project = self.outPath;
+        } { inherit tool default names; }).file;
       # The standard paths that actionlint and zizmor discover.
-      actionlintConfig = chosen "actionlint.yaml" [
+      actionlintConfig = chosen "actionlint" (root + "/config/actionlint.yaml") [
         ".github/actionlint.yaml"
         ".github/actionlint.yml"
       ];
-      zizmorConfig = chosen "zizmor.yml" [
+      zizmorConfig = chosen "zizmor" (root + "/config/zizmor.yml") [
         ".github/zizmor.yml"
         ".github/zizmor.yaml"
         "zizmor.yml"
