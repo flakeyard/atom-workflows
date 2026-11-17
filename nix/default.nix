@@ -21,6 +21,27 @@ let
       atom = "atom-workflows";
       inherit root;
     };
+  # The files of the domain, which the check and the app share (FY-0017), from
+  # lib of the consumer's nixpkgs and the hooks as the project's configuration
+  # holds them.
+  domain =
+    {
+      lib,
+      self,
+      hooks,
+    }:
+    shared.domain
+      {
+        inherit lib;
+        project = self.outPath;
+      }
+      {
+        name = "workflows";
+        hooks = [
+          hooks.actionlint
+          hooks.zizmor
+        ];
+      };
 in
 {
   key = toString ./default.nix;
@@ -30,9 +51,9 @@ in
     (import ./hooks.nix { inherit root shared; })
     (import ./checks.nix {
       inherit (atomInputs) git-hooks;
-      inherit warning;
+      inherit domain warning;
     })
-    ./apps.nix
+    (import ./apps.nix { inherit domain; })
     (import ./shell.nix { inherit warning; })
   ];
 }
