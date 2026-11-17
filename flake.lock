@@ -38,6 +38,24 @@
         "url": "https://github.com/cachix/git-hooks.nix"
       }
     },
+    "lib-atom": {
+      "locked": {
+        "lastModified": 1794902163,
+        "narHash": "sha256-cD6ZkxNK0x+wGVL9OZPU+QohKfaBPvTr9AZnWUS8spQ=",
+        "ref": "v0",
+        "rev": "f2c83b7399315afb477abba1e112bca107f0b345",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/flakeyard/lib-atom"
+      },
+      "original": {
+        "ref": "v0",
+        "rev": "f2c83b7399315afb477abba1e112bca107f0b345",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/flakeyard/lib-atom"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1787631388,
@@ -56,7 +74,8 @@
     },
     "root": {
       "inputs": {
-        "git-hooks": "git-hooks"
+        "git-hooks": "git-hooks",
+        "lib-atom": "lib-atom"
       }
     }
   },

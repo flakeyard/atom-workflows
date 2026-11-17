@@ -85,6 +85,13 @@ no formatter, so it has no `treefmt-nix`. The atom fails evaluation with the
 line `inputs.git-hooks.follows = "git-hooks";` when the consumer's `git-hooks`
 has another store path.
 
+Amended for [FY-0040][fy-0040]: the public flake also declares `lib-atom`, which
+the atom pins in its own `flake.lock` and consumers neither declare nor follow.
+The check of `follows`, the warning of the next major version and the choice of
+the configuration files are the functions `upstream`, `warning` and `config` of
+lib-atom; the messages of the first two stay the same, and the atom keeps no
+copy of them.
+
 The atom enables the upstream hooks `actionlint` and `zizmor` and owns them. It
 sets their `package` to `pkgs.actionlint` and `pkgs.zizmor` of the consumer, and
 their `files` and `args`, all with `lib.mkOverride 900`:
@@ -118,10 +125,13 @@ write out every value the tool would otherwise default, with a comment on why:
 
 The project's file replaces the default when it exists at
 `.github/actionlint.yaml` or `.github/actionlint.yml`, and at
-`.github/zizmor.yml`, `.github/zizmor.yaml`, `zizmor.yml` or `zizmor.yaml`, the
-first one in this order. The atom detects it with `builtins.pathExists` on the
-consumer's `self`, which for a git flake holds only tracked files, and copies
-the chosen file with `builtins.path`.
+`.github/zizmor.yml`, `.github/zizmor.yaml`, `zizmor.yml` or `zizmor.yaml`.
+Amended for [FY-0040][fy-0040]: evaluation fails when the project has more than
+one file of a tool, where the atom took the first one in this order, since the
+choice is the function `config` of lib-atom; the change is allowed while the
+atom is `0.y.z` ([FY-0024][fy-0024]). The function detects the file with
+`builtins.pathExists` on the consumer's `self`, which for a git flake holds only
+tracked files, and copies the chosen file with `builtins.path`.
 
 ### Check, app and shell
 
@@ -156,9 +166,13 @@ guide the file names ([FY-0016][fy-0016], [FY-0038][fy-0038]).
 
 `dev/flake.nix` imports the atom from the flake's own outputs called with the
 dev flake's `git-hooks`, which is what `follows` gives a consumer, and lints
-this repository with it. Its checks evaluate on x86_64-linux and aarch64-linux:
-fixture projects that pass, that fail both tools, that bring their own
-configuration files, that a global exclude makes pass and that other excludes
+this repository with it. As amended for [FY-0040][fy-0040], the dev flake
+fetches the revision of lib-atom that the root `flake.lock` pins, gives it to
+the atom and takes the fixture projects and the tests of `follows` and the
+warning from its `internal/testing`, with the messages restated in the tests.
+Its checks evaluate on x86_64-linux and aarch64-linux: fixture projects that
+pass, that fail both tools, that bring their own configuration files or two
+files of actionlint, that a global exclude makes pass and that other excludes
 leave failing, that fails only on the inputs of a local action, a test that
 fails once actionlint stops reporting one of the ignored messages, a test of the
 follows error, of the next-major warning, and a test that `config/zizmor.yml` is
@@ -166,9 +180,9 @@ valid against zizmor's schema and lists every audit in it.
 
 ## Constraints
 
-- The public flake MUST declare only the input `git-hooks`, and MUST fail
-  evaluation with the exact follows line when the consumer's `git-hooks` has
-  another store path.
+- The public flake MUST declare only the inputs `git-hooks` and `lib-atom`
+  ([FY-0040][fy-0040]), and MUST fail evaluation with the exact follows line
+  when the consumer's `git-hooks` has another store path.
 - The atom MUST set the hooks `actionlint` and `zizmor` only with
   `lib.mkOverride 900`, with packages of the consumer's `pkgs`.
 - The atom MUST pass the chosen configuration file by `-config-file` and
@@ -240,3 +254,5 @@ valid against zizmor's schema and lists every audit in it.
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0037-atoms-ship-default-configs-that-projects-replace.md
 [fy-0038]:
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0038-roll-out-the-atoms.md
+[fy-0040]:
+  https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0040-share-code-through-lib-repositories.md

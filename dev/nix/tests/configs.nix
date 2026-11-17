@@ -1,6 +1,6 @@
 # The configuration files (FY-0037): the project's file at a standard path
-# replaces the default of the atom, and the chosen file is an input of the
-# check as a store path of its own.
+# replaces the default of the atom, the chosen file is an input of the check
+# as a store path of its own, and two files of one tool fail evaluation.
 {
   facts,
   fixture,
@@ -30,6 +30,12 @@
         in
         lib.elem (stored path) (hooks.actionlint.args ++ hooks.zizmor.args)
         && lib.hasInfix (stored path) (builtins.toJSON checks.workflows.config.rawConfig);
+      # The arguments of actionlint evaluate, which they do not with two of
+      # its files.
+      evaluates =
+        name:
+        (builtins.tryEval (builtins.deepSeq (project name).pre-commit.settings.hooks.actionlint.args true))
+        .success;
       own = root + "/dev/fixtures/project-config/.github";
       default = root + "/config";
     in
@@ -41,6 +47,8 @@
         "the default zizmor.yml is not used" = !uses "project-config" (default + "/zizmor.yml");
         "without a file, the default actionlint.yaml is used" = uses "good" (default + "/actionlint.yaml");
         "without a file, the default zizmor.yml is used" = uses "good" (default + "/zizmor.yml");
+        "one file of actionlint evaluates" = evaluates "project-config";
+        "two files of actionlint fail" = !evaluates "two-configs";
       };
       # The workflows of the project pass only with the project's files.
       checks.test-configs-project = (project "project-config").checks.workflows;

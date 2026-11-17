@@ -17,7 +17,9 @@ It checks:
 ## Inputs
 
 The atom has one input, `git-hooks`, which the project makes it share with
-`follows` ([FY-0017][fy-0017]). While the atom is `0.y.z`, only flakeyard's own
+`follows` ([FY-0017][fy-0017]). It also pins [lib-atom][lib-atom], the functions
+that atoms share, in its own `flake.lock`; the project neither declares nor
+follows it ([FY-0040][fy-0040]). While the atom is `0.y.z`, only flakeyard's own
 repositories use it, in the form of [FY-0016][fy-0016]:
 
 ```nix
@@ -90,8 +92,16 @@ one ([FY-0037][fy-0037]).
 | shellcheck | none                      | none         | not read       |
 
 - actionlint also finds `.github/actionlint.yml`, and zizmor
-  `.github/zizmor.yaml`, `zizmor.yml` and `zizmor.yaml`; the first path found,
-  in the order listed, wins.
+  `.github/zizmor.yaml`, `zizmor.yml` and `zizmor.yaml`. A project keeps one
+  file per tool; with two, evaluation fails ([FY-0040][fy-0040]):
+
+  ```text
+  atom-workflows: the project has more than one configuration of actionlint:
+  .github/actionlint.yaml, .github/actionlint.yml; keep one.
+  ```
+
+  (one line, wrapped here).
+
 - actionlint always gets `-config-file` with the chosen file,
   `-shellcheck=<shellcheck>` and `-pyflakes=` (off), and four `-ignore`
   patterns.
@@ -203,12 +213,17 @@ imports the atom as consumers do, with [atom-nix][atom-nix],
 - `test-local-action`: actionlint checks the inputs of a local action in the
   check;
 - `test-configs`: the project's files replace the defaults in the hooks and in
-  the check;
+  the check, and two files of actionlint fail evaluation;
 - `test-ignores`: actionlint still reports each message the atom ignores;
 - `test-follows`: the error for a missing `follows`;
 - `test-next-major`: the warning of the next major version;
 - `test-zizmor-audits`: [`config/zizmor.yml`](config/zizmor.yml) is valid and
   lists every audit of zizmor.
+
+The dev flake has no input for lib-atom: it fetches the revision that the root
+[`flake.lock`](flake.lock) pins, gives it to the atom and takes the fixture
+projects and the tests `test-follows` and `test-next-major` from
+`internal/testing` of that revision ([FY-0040][fy-0040]).
 
 Run the same commands as CI:
 
@@ -257,6 +272,9 @@ the atoms that will provide them are not released yet ([FY-0038][fy-0038]).
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0037-atoms-ship-default-configs-that-projects-replace.md
 [fy-0038]:
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0038-roll-out-the-atoms.md
+[fy-0040]:
+  https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0040-share-code-through-lib-repositories.md
+[lib-atom]: https://github.com/flakeyard/lib-atom
 [versioning]: https://github.com/flakeyard/.github/blob/main/VERSIONING.md
 [workflow-check]: https://github.com/flakeyard/workflow-check
 [workflow-release]: https://github.com/flakeyard/workflow-release
