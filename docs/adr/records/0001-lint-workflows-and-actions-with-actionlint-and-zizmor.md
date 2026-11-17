@@ -90,7 +90,10 @@ the atom pins in its own `flake.lock` and consumers neither declare nor follow.
 The check of `follows`, the warning of the next major version and the choice of
 the configuration files are the functions `upstream`, `warning` and `config` of
 lib-atom; the messages of the first two stay the same, and the atom keeps no
-copy of them.
+copy of them. The source of `checks.workflows` and the files of the app
+`workflows-online`, filtered by the hooks' `files`, are the function `domain` of
+lib-atom 0.2.0, called once for both, with the same files; the atom keeps no
+copy of it.
 
 The atom enables the upstream hooks `actionlint` and `zizmor` and owns them. It
 sets their `package` to `pkgs.actionlint` and `pkgs.zizmor` of the consumer, and
