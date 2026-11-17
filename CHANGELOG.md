@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/flakeyard/atom-workflows/compare/v0.1.1...v0.1.2) (2026-11-17)
+
+
+### Bug Fixes
+
+* take the files of the domain from lib-atom 0.2.0 ([#23](https://github.com/flakeyard/atom-workflows/issues/23)) ([705d916](https://github.com/flakeyard/atom-workflows/commit/705d9160ed59eaef15c74f3094cff418160674f3))
+* take the shared functions from lib-atom ([#21](https://github.com/flakeyard/atom-workflows/issues/21)) ([32e899c](https://github.com/flakeyard/atom-workflows/commit/32e899c587f02d0f218c51fd39c1673a4e927e91))
+
 ## [0.1.1](https://github.com/flakeyard/atom-workflows/compare/v0.1.0...v0.1.1) (2026-11-13)
 
 
