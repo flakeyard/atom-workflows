@@ -24,7 +24,7 @@ jobs:
   check:
     # Dispatched runs post their final status on every outcome.
     if: ${{ !cancelled() || github.event_name == 'workflow_dispatch' }}
-    uses: flakeyard/workflow-check/.github/workflows/check.yaml@aa514199d5eb5231dfc42e70a99288fd79832311 # v0.4.0
+    uses: flakeyard/workflow-check/.github/workflows/check.yaml@d72a7bf209e2dfe64aa78779a3e2ab23a9aab15c # v0.6.1
     permissions:
       actions: read # own job name and the jobs of the run
       contents: read # repository files through the contents API, checkout
@@ -34,10 +34,14 @@ jobs:
       needs: ${{ toJSON(needs) }}
       flake: ./dev
       expect-checks: >-
-        ["nix","shell","test-bad","test-configs","test-configs-project",
-        "test-excluded","test-follows","test-good","test-ignores",
-        "test-local-action","test-next-major","test-not-excluded",
-        "test-zizmor-audits","treefmt","workflows"]
+        ["data-formats","markdown","nix","shell","test-bad",
+        "test-configs","test-configs-project","test-excluded",
+        "test-follows","test-good","test-ignores","test-local-action",
+        "test-next-major","test-not-excluded","test-zizmor-audits",
+        "text","treefmt","workflows"]
+      # Weekly, the apps that need the network: the links of the Markdown files
+      # and the online audits of the workflows.
+      apps: ${{ github.event_name == 'schedule' && '["markdown-links","workflows-online"]' || '[]' }}
       # The tests against the current upstream revisions (FY-0017, FY-0038).
       override-inputs: >-
         ${{ github.event_name == 'schedule'

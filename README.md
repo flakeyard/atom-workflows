@@ -199,11 +199,13 @@ Nix store has the tools of the hooks. With Nix on the host, `direnv allow` or
 
 The public [`flake.nix`](flake.nix) holds only the input and the module
 ([FY-0017][fy-0017]). [`dev/flake.nix`](dev/flake.nix), with its own lock,
-imports the atom as consumers do, with [atom-nix][atom-nix],
-[atom-shell][atom-shell] and atom-workspace, and holds the tests:
+imports the atom as consumers do, with [atom-data-formats][atom-data-formats],
+[atom-markdown][atom-markdown], [atom-nix][atom-nix], [atom-shell][atom-shell],
+[atom-text][atom-text] and atom-workspace, and holds the tests:
 
 - `workflows`: the atom's check of this repository;
-- `nix`, `shell`, `treefmt`: the checks of atom-nix and atom-shell of this
+- `data-formats`, `markdown`, `nix`, `shell`, `text`, `treefmt`: the checks of
+  atom-data-formats, atom-markdown, atom-nix, atom-shell and atom-text of this
   repository;
 - `test-good`, `test-bad`, `test-configs-project`: the check of the fixture
   projects in [`dev/fixtures`](dev/fixtures), which pass, fail both tools and
@@ -233,27 +235,32 @@ nix flake check --no-update-lock-file --no-build --all-systems ./dev
 ```
 
 CI runs [`test.yaml`](.github/workflows/test.yaml), which calls
-[workflow-check][workflow-check] with `./dev`: it checks `dev/flake.lock`,
-builds every check on x86_64 and arm64 runners, checks the pull request title
-and `renovate.json`, fails on configuration files of atom tools at their
-standard root paths ([FY-0037][fy-0037]), and reports `check / required`
-([FY-0034][fy-0034]). Its weekly run builds the checks against the current
-branches of nixpkgs, git-hooks.nix, treefmt-nix and flake-parts instead of the
-locked revisions ([FY-0038][fy-0038]).
+[workflow-check][workflow-check] with `./dev`: it checks `dev/flake.lock` and
+the root `flake.lock`, builds every check on x86_64 and arm64 runners, checks
+the pull request title and `renovate.json`, fails on configuration files of atom
+tools at their standard root paths ([FY-0037][fy-0037]), and reports
+`check / required` ([FY-0034][fy-0034]). Its weekly run builds the checks
+against the current branches of nixpkgs, git-hooks.nix, treefmt-nix and
+flake-parts instead of the locked revisions ([FY-0038][fy-0038]) and runs the
+apps that need the network: `markdown-links` checks every link of the Markdown
+files and `workflows-online` runs the audits of zizmor that need it.
 [`scorecard.yaml`](.github/workflows/scorecard.yaml) runs OpenSSF Scorecard, and
 [`release.yaml`](.github/workflows/release.yaml) releases the repository with
 [workflow-release][workflow-release].
 
-Before a pull request, also run prettier, markdownlint, typos and `reuse lint`;
-the atoms that will provide them are not released yet ([FY-0038][fy-0038]).
+Before a pull request, also run `reuse lint`; the atom that will provide it is
+not released yet ([FY-0038][fy-0038]).
 
 ## License
 
 [MIT](LICENSE).
 
 [al]: config/actionlint.yaml
+[atom-data-formats]: https://github.com/flakeyard/atom-data-formats
+[atom-markdown]: https://github.com/flakeyard/atom-markdown
 [atom-nix]: https://github.com/flakeyard/atom-nix
 [atom-shell]: https://github.com/flakeyard/atom-shell
+[atom-text]: https://github.com/flakeyard/atom-text
 [atom-workspace]: https://github.com/flakeyard/atom-workspace
 [zz]: config/zizmor.yml
 [adr-0001]:
