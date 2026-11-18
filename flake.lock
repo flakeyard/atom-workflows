@@ -40,17 +40,17 @@
     },
     "lib-atom": {
       "locked": {
-        "lastModified": 1794913667,
-        "narHash": "sha256-OafPn8h5G3dppZLrDnHGGHE+r5sb0aq+jaVsS0LJy4I=",
+        "lastModified": 1794916860,
+        "narHash": "sha256-dU0TiUNrWwRK8GiQEyfIGEyrAAOdircz6OS9O6fgzZ0=",
         "ref": "v0",
-        "rev": "747f5680bfded1108d25302ab59d105c35087a9b",
+        "rev": "6a962bfb805ce814cba756a7943f6f2d2cd1f67e",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/flakeyard/lib-atom"
       },
       "original": {
         "ref": "v0",
-        "rev": "747f5680bfded1108d25302ab59d105c35087a9b",
+        "rev": "6a962bfb805ce814cba756a7943f6f2d2cd1f67e",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/flakeyard/lib-atom"
