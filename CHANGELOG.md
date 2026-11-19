@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/flakeyard/atom-workflows/compare/v0.1.3...v0.1.4) (2026-11-19)
+
+
+### Bug Fixes
+
+* **deps:** update flake input lib-atom to 99d4af0 ([#41](https://github.com/flakeyard/atom-workflows/issues/41)) ([78c57f3](https://github.com/flakeyard/atom-workflows/commit/78c57f306034d63d12bcb2245fccd7d250df09f1))
+
 ## [0.1.3](https://github.com/flakeyard/atom-workflows/compare/v0.1.2...v0.1.3) (2026-11-18)
 
 
