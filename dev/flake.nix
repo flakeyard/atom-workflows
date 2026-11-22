@@ -39,7 +39,7 @@
       url = "git+https://github.com/flakeyard/atom-text?ref=v0&rev=68467987a5d8db04681d587ffaa2d9aa755a4f62&shallow=1";
       inputs.git-hooks.follows = "git-hooks";
     };
-    atom-workspace.url = "git+https://github.com/flakeyard/atom-workspace?ref=v0&rev=df1b7e30233e3bb0f489834f84070a25b0b0807f&shallow=1";
+    atom-workspace.url = "git+https://github.com/flakeyard/atom-workspace?ref=v0&rev=19b05dd722aa405c6110364ca60438d94855d1fe&shallow=1";
     import-tree.url = "git+https://github.com/vic/import-tree?ref=main&rev=eb1b52eaecc57f7c136d07ae8a93e724dfecac46&shallow=1";
   };
 
