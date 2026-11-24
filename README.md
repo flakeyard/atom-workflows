@@ -191,11 +191,15 @@ Open the repository in the flakeyard dev container: the editor reads
 `direnv` loads the shell of [`dev/flake.nix`](dev/flake.nix) through
 [`.envrc`](.envrc) ([FY-0012][fy-0012]). [atom-workspace][atom-workspace] builds
 the shell and installs the git hooks each time it starts. The container runs
-`direnv allow` when it is created; run it once in every other worktree, and run
-`direnv block` before you check out a branch you do not trust, since entering
-the directory runs that branch's shell hook. Commit inside the container, whose
-Nix store has the tools of the hooks. With Nix on the host, `direnv allow` or
-`nix develop ./dev` gives the same shell.
+`devcontainer-setup` when it is created ([FY-0042][fy-0042]): it allows the
+shell, fails when the shell or its git hooks are broken, and makes git record
+worktrees by relative paths. Create worktrees inside the workspace with
+`git worktree add .worktrees/<name>` and work in them from the same container;
+git on the host must be 2.48 or newer to use them. Run `direnv allow` once in
+every worktree, and run `direnv block` before you check out a branch you do not
+trust, since entering the directory runs that branch's shell hook. Commit inside
+the container, whose Nix store has the tools of the hooks. With Nix on the host,
+`direnv allow` or `nix develop ./dev` gives the same shell.
 
 The public [`flake.nix`](flake.nix) holds only the input and the module
 ([FY-0017][fy-0017]). [`dev/flake.nix`](dev/flake.nix), with its own lock,
@@ -267,6 +271,8 @@ not released yet ([FY-0038][fy-0038]).
   docs/adr/records/0001-lint-workflows-and-actions-with-actionlint-and-zizmor.md
 [fy-0012]:
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0012-develop-in-container.md
+[fy-0042]:
+  https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0042-set-up-the-dev-container-with-one-command-and-keep-worktrees-inside-it.md
 [fy-0016]:
   https://github.com/flakeyard/decisions/blob/main/docs/adr/records/0016-pin-form.md
 [fy-0017]:
